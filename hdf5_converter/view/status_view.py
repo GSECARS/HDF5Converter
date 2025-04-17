@@ -26,7 +26,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from gsewidgets import TextInfoBox
+from gsewidgets import TextInfoBox, HorizontalLine
 from qtpy.QtWidgets import QFrame, QVBoxLayout
 
 
@@ -45,6 +45,8 @@ class StatusView(QFrame):
     def _layout(self) -> None:
         """Sets the layout of the status view."""
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(HorizontalLine())
         layout.addWidget(self.txt_info)
 
         # Set the layout to the status view
