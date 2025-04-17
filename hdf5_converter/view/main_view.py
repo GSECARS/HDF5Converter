@@ -26,7 +26,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMainWindow, QFrame, QVBoxLayout
+from qtpy.QtCore import Qt
+
+from hdf5_converter.view.status_view import StatusView
 
 
 class MainView(QMainWindow):
@@ -34,6 +37,31 @@ class MainView(QMainWindow):
 
     def __init__(self) -> None:
         super(MainView, self).__init__()
+
+        self.status_view = StatusView()
+
+        self._configure_view()
+        self._layout()
+
+    def _configure_view(self) -> None:
+        """Configures the main view of the HDF5 Converter GUI."""
+        # Set the size of the main window
+        self.setMinimumSize(800, 600)
+
+        # Set the window flags
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
+        # Main frame
+        self.main_frame = QFrame()
+        self.setCentralWidget(self.main_frame)
+
+    def _layout(self) -> None:
+        """Sets the layout of the main view."""
+        # Set the layout of the main frame
+        layout = QVBoxLayout()
+        layout.addWidget(self.status_view)
+
+        self.main_frame.setLayout(layout)
 
     def display_window(self) -> None:
         """Sets the title and displays the main window."""
