@@ -29,6 +29,7 @@
 from qtpy.QtWidgets import QMainWindow, QFrame, QVBoxLayout
 from qtpy.QtCore import Qt
 
+from hdf5_converter.view.converter_view import ConverterView
 from hdf5_converter.view.status_view import StatusView
 
 
@@ -38,8 +39,11 @@ class MainView(QMainWindow):
     def __init__(self) -> None:
         super(MainView, self).__init__()
 
+        # Create the widgets
+        self.converter_view = ConverterView()
         self.status_view = StatusView()
 
+        # Run the configuration methods
         self._configure_view()
         self._layout()
 
@@ -59,6 +63,8 @@ class MainView(QMainWindow):
         """Sets the layout of the main view."""
         # Set the layout of the main frame
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.converter_view)
         layout.addWidget(self.status_view)
 
         self.main_frame.setLayout(layout)
