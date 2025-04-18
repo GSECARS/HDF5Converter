@@ -30,13 +30,26 @@ from pathlib import Path
 
 import fabio
 import h5py
+from qtpy.QtCore import Signal, QObject
 
 
-class ConverterModel:
+class ConverterModel(QObject):
     """This class is responsible for handling the conversion process."""
 
-    @staticmethod
-    def save_data(data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tiff") -> None:
+    new_status = Signal()
+
+    def __init__(self) -> None:
+        """Initialises the converter model."""
+        super(ConverterModel, self).__init__()
+
+        self._status_message = ""
+
+    def set_status_message(self, message: str) -> None:
+        """Sets the status message."""
+        self._status_message = message
+        self.new_status.emit()
+
+    def save_data(self, data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tiff") -> None:
         """Saves the data in the specified format."""
 
         digits = int(digits)
@@ -55,7 +68,7 @@ class ConverterModel:
         output_path = Path(output_file)
 
         if output_path.exists():
-            print(f"Error: The file or directory '{output_file}' already exists. Conversion stopped to prevent data loss.")
+            self.set_status_message(f"Error: The file or directory '{output_file}' already exists. Conversion stopped to prevent data loss.")
             return
 
         if is_single_frame or data.ndim == 2:
@@ -72,13 +85,12 @@ class ConverterModel:
                 output_frame_path = Path(output_file_with_frame)
 
                 if output_frame_path.exists():
-                    print(f"Error: The file '{output_file_with_frame}' already exists. Conversion stopped to prevent data loss.")
+                    self.set_status_message(f"Error: The file '{output_file_with_frame}' already exists. Conversion stopped to prevent data loss.")
                     return
 
                 image.write(output_file_with_frame)
 
-    @staticmethod
-    def process(file_name: str, search_term: str, output_type: str, digits: int) -> None:
+    def process(self, file_name: str, search_term: str, output_type: str, digits: int) -> None:
         """Processes the HDF5 file and converts the datasets to the specified format."""
         
         image_count = 0
@@ -106,14 +118,14 @@ class ConverterModel:
                         # Single frame case
                         output_file = parent_dir / f"{base_name}.{output_type}"
                         if output_file.exists():
-                            print(f"Error: The file '{output_file}' already exists. Conversion stopped to prevent data loss.")
+                            ConverterModel.set_status_message(f"Error: The file '{output_file}' already exists. Conversion stopped to prevent data loss.")
                             return
                         ConverterModel.save_data(data, str(output_file), is_single_frame=True, digits=digits, format=output_type)
                     else:
                         # Multiple frames case
                         output_dir = parent_dir / f"{base_name}_{output_type}"
                         if output_dir.exists():
-                            print(f"Error: The directory '{output_dir}' already exists. Conversion stopped to prevent data loss.")
+                            ConverterModel.set_status_message(f"Error: The directory '{output_dir}' already exists. Conversion stopped to prevent data loss.")
                             return
                         output_dir.mkdir(parents=True, exist_ok=True)
                         output_file = output_dir / f"{base_name}"
@@ -122,8 +134,13 @@ class ConverterModel:
                     print(f"Error processing dataset {name}: {e}")
         
         if not Path(file_name).is_file():
-            print(f"File {file_name} does not exist or cannot be accessed.")
+            self.set_status_message(f"File {file_name} does not exist or cannot be accessed.")
             return
         
         with h5py.File(file_name, "r") as file:
             file.visititems(visit_func)
+
+    @property
+    def status_message(self) -> str:
+        """Returns the status message."""
+        return self._status_message
