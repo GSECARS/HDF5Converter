@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # ----------------------------------------------------------------------------------
 # Project: HDF5 Converter
-# File: hdf5_converter/controller/main_controller.py
+# File: hdf5_converter/model/main_model.py
 # ----------------------------------------------------------------------------------
 # Purpose:
-# This file is used to start the HDF5 Converter application.
+# This is the main model of the HDF5 Converter GUI. It is responsible for
+# setting up the main model that handles the conversion process.
 # ----------------------------------------------------------------------------------
 # Author: Christofanis Skordas
 #
@@ -25,26 +26,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-import sys
-
-from qtpy.QtWidgets import QApplication
-
-from hdf5_converter.view import MainView
-from hdf5_converter.model import MainModel
+from hdf5_converter.model.converter_model import ConverterModel
 
 
-class MainController:
-    """This class is responsible for controlling the main application."""
+class MainModel:
+    """This class is responsible for setting up the main model of the HDF5 Converter GUI."""
 
     def __init__(self) -> None:
-        self._app = QApplication(sys.argv)
-        self._view = MainView()
-        self._model = MainModel()
-
-    def run(self) -> None:
-        """Runs the main application."""
-        # Display the main view
-        self._view.display_window()
-
-        # Start the Qt app and return the status code
-        sys.exit(self._app.exec())
+        """Initialises the main model."""
+        self.converter = ConverterModel()
