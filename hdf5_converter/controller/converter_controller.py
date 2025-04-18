@@ -26,6 +26,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 from hdf5_converter.view import MainView
 from hdf5_converter.model import MainModel
 
@@ -44,21 +47,62 @@ class ConverterController:
     def _connect_signals(self) -> None:
         """Connect signals from the view to the model."""
         # Connect the convert button signal to the model's convert method
-        self._view.converter_view.btn_convert.clicked.connect(self._on_convert_button_clicked)
+        self._view.converter_view.btn_convert.clicked.connect(self._convert_files)
+        self._model.converter.new_status.connect(self._update_status_message)
 
-    def _on_convert_button_clicked(self) -> None:
-        """Handle the convert button click event."""
-        
+    def _convert_files(self) -> None:
+        """Handle the conversion process when the convert button is clicked."""
+        start_time = time.time()
+
+        self._prepare_for_convertion()
+
+        # Get the selected format and digits from the view
         format = self._view.converter_view.cmb_output_type.currentText()
         digits = self._view.converter_view.spin_digits.value()
         input_files = self._view.converter_view.btn_input.file_path
 
-        print(f"Input files: {input_files}")
-        print(f"Output format: {format}")
-        print(f"Number of digits: {digits}")
+        # Convert the files using a thread pool
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            for file in input_files:
+                future = executor.submit(self._model.converter.process, file, "data", format, digits)
+                futures.append(future)
 
-        # Call the model's save_data method to perform the conversion
-        for file_name in input_files:
-            self._model.converter.process(file_name=file_name, digits=digits, output_type=format, search_term="data")
-        
-        
+            for future in futures:
+                try:
+                    # Wait for the future to complete and handle any exceptions
+                    future.result()
+                except Exception as e:
+                    self._view.status_view.update_status.emit(f"Error processing file: {e}")
+
+        # Print the total time taken to convert the files in minutes or seconds based on the time taken
+        end_time = time.time()
+        total_time = end_time - start_time
+        if total_time < 60:
+            self._view.status_view.update_status.emit(f"Conversion completed in {total_time:.2f} seconds.")
+        else:
+            self._view.status_view.update_status.emit(f"Conversion completed in {int(total_time // 60)} minutes and {total_time % 60:.2f} seconds.")
+
+        # Restore the conversion widgets
+        self._view.converter_view.togge_widget_status(True)
+
+    def _prepare_for_convertion(self) -> None:
+        """Prepare the view for conversion by disabling the widgets and updating the status message."""
+        # Disable the conversion widgets
+        self._view.converter_view.togge_widget_status(False)
+
+        # Clear the status view
+        self._view.status_view.clear()
+
+        # Provide the initial message for the conversion starting and on what files
+        self._view.status_view.update_status.emit("Files to be converted:")
+        self._view.status_view.update_status.emit("--------------------------------------------------")
+        # Get the input files from the view
+        input_files = self._view.converter_view.btn_input.file_path
+        for file in input_files:
+            self._view.status_view.update_status.emit(file)
+        self._view.status_view.update_status.emit("--------------------------------------------------")
+
+    def _update_status_message(self) -> None:
+        """Update the status message in the view."""
+        self._view.status_view.update_status.emit(self._model.converter.status_message)

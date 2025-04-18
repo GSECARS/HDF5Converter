@@ -118,21 +118,21 @@ class ConverterModel(QObject):
                         # Single frame case
                         output_file = parent_dir / f"{base_name}.{output_type}"
                         if output_file.exists():
-                            ConverterModel.set_status_message(f"Error: The file '{output_file}' already exists. Conversion stopped to prevent data loss.")
+                            self.set_status_message(f"Error: The file '{output_file}' already exists. Conversion stopped to prevent data loss.")
                             return
-                        ConverterModel.save_data(data, str(output_file), is_single_frame=True, digits=digits, format=output_type)
+                        self.save_data(data, str(output_file), is_single_frame=True, digits=digits, format=output_type)
                     else:
                         # Multiple frames case
                         output_dir = parent_dir / f"{base_name}_{output_type}"
                         if output_dir.exists():
-                            ConverterModel.set_status_message(f"Error: The directory '{output_dir}' already exists. Conversion stopped to prevent data loss.")
+                            self.set_status_message(f"Error: The directory '{output_dir}' already exists. Conversion stopped to prevent data loss.")
                             return
                         output_dir.mkdir(parents=True, exist_ok=True)
                         output_file = output_dir / f"{base_name}"
-                        ConverterModel.save_data(data, str(output_file), digits=digits, format=output_type)
+                        self.save_data(data, str(output_file), digits=digits, format=output_type)
                 except Exception as e:
                     print(f"Error processing dataset {name}: {e}")
-        
+
         if not Path(file_name).is_file():
             self.set_status_message(f"File {file_name} does not exist or cannot be accessed.")
             return
