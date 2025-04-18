@@ -87,7 +87,6 @@ class ConverterView(QFrame):
 
     def togge_widget_status(self, status: bool) -> None:
         """Toggles the status of the widgets in the converter view."""
-        print(f"Status: {status}")
         self.btn_input.setEnabled(status)
         self.spin_digits.setEnabled(status)
         self.cmb_output_type.setEnabled(status)
