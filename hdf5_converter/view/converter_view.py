@@ -58,8 +58,6 @@ class ConverterView(QFrame):
         # Set the default output type
         self.cmb_output_type.addItem("tiff")
         self.cmb_output_type.addItem("cbf")
-        self.cmb_output_type.addItem("jpeg")
-        self.cmb_output_type.addItem("esperanto")
         self.cmb_output_type.setCurrentIndex(0)
 
     def _layout(self) -> None:
@@ -87,3 +85,10 @@ class ConverterView(QFrame):
         # Set the layout to the converter view
         self.setLayout(layout)
 
+    def togge_widget_status(self, status: bool) -> None:
+        """Toggles the status of the widgets in the converter view."""
+        print(f"Status: {status}")
+        self.btn_input.setEnabled(status)
+        self.spin_digits.setEnabled(status)
+        self.cmb_output_type.setEnabled(status)
+        self.btn_convert.setEnabled(status)

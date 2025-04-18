@@ -44,9 +44,7 @@ class ConverterModel:
         # The available formats
         format_mapping = {
             "tiff": fabio.tifimage.tifimage,
-            "cbf": fabio.cbfimage.cbfimage,
-            "jpeg": fabio.jpegimage.jpegimage,
-            "esperanto": fabio.esperantoimage.esperantoimage
+            "cbf": fabio.cbfimage.cbfimage
         }
 
         if format not in format_mapping:
