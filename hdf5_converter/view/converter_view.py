@@ -58,10 +58,8 @@ class ConverterView(QFrame):
         # Set the default output type
         self.cmb_output_type.addItem("tiff")
         self.cmb_output_type.addItem("cbf")
-        self.cmb_output_type.addItem("sframe")
-        self.cmb_output_type.addItem("jpg")
-        self.cmb_output_type.addItem("png")
-        self.cmb_output_type.addItem("bmp")
+        self.cmb_output_type.addItem("jpeg")
+        self.cmb_output_type.addItem("esperanto")
         self.cmb_output_type.setCurrentIndex(0)
 
     def _layout(self) -> None:

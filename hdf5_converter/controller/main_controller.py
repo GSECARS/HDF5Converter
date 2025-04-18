@@ -31,6 +31,7 @@ from qtpy.QtWidgets import QApplication
 
 from hdf5_converter.view import MainView
 from hdf5_converter.model import MainModel
+from hdf5_converter.controller.converter_controller import ConverterController
 
 
 class MainController:
@@ -40,6 +41,9 @@ class MainController:
         self._app = QApplication(sys.argv)
         self._view = MainView()
         self._model = MainModel()
+
+        # Initialize the converter controller
+        self._converter_controller = ConverterController(self._view, self._model)
 
     def run(self) -> None:
         """Runs the main application."""

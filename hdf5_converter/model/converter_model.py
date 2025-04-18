@@ -39,14 +39,14 @@ class ConverterModel:
     def save_data(data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tiff") -> None:
         """Saves the data in the specified format."""
 
+        digits = int(digits)
+
         # The available formats
         format_mapping = {
             "tiff": fabio.tifimage.tifimage,
             "cbf": fabio.cbfimage.cbfimage,
-            "sframe": fabio.sframeimage.sframeimage,
-            "jpg": fabio.jpgimage.jpgimage,
-            "png": fabio.pngimage.pngimage,
-            "bmp": fabio.bmpimage.bmpimage,
+            "jpeg": fabio.jpegimage.jpegimage,
+            "esperanto": fabio.esperantoimage.esperantoimage
         }
 
         if format not in format_mapping:
@@ -106,11 +106,14 @@ class ConverterModel:
 
                     if data.ndim == 2 or (data.ndim == 3 and data.shape[0] == 1):
                         # Single frame case
-                        output_file = parent_dir / f"{base_name}_converted.{output_type}"
+                        output_file = parent_dir / f"{base_name}.{output_type}"
+                        if output_file.exists():
+                            print(f"Error: The file '{output_file}' already exists. Conversion stopped to prevent data loss.")
+                            return
                         ConverterModel.save_data(data, str(output_file), is_single_frame=True, digits=digits, format=output_type)
                     else:
                         # Multiple frames case
-                        output_dir = parent_dir / f"{base_name}_conversions"
+                        output_dir = parent_dir / f"{base_name}_{output_type}"
                         if output_dir.exists():
                             print(f"Error: The directory '{output_dir}' already exists. Conversion stopped to prevent data loss.")
                             return
