@@ -60,6 +60,15 @@ class ConverterView(QFrame):
         self.cmb_output_type.addItem("cbf")
         self.cmb_output_type.setCurrentIndex(0)
 
+        self.btn_input.clicked.connect(self._update_load_file_button)
+
+    def _update_load_file_button(self) -> None:
+        """Updates the load file button with the selected file paths."""
+        if self.btn_input.file_path:
+            self.btn_input.setText(f"Loaded {len(self.btn_input.file_path)} File(s)")
+        else:
+            self.btn_input.setText("Load File(s)")
+
     def _layout(self) -> None:
         """Sets the layout of the converter view."""
 
