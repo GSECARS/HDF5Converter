@@ -29,17 +29,24 @@
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+from qtpy.QtCore import Signal, QObject
+
 from hdf5_converter.view import MainView
 from hdf5_converter.model import MainModel
 
 
 
-class ConverterController:
+class ConverterController(QObject):
+    """This class is responsible for handling the conversion process."""
+    convertion_signal = Signal()
     
     def __init__(self, view: MainView, model: MainModel) -> None:
         """Initialize the converter controller with the view and model."""
+        super(ConverterController, self).__init__()
         self._view = view
         self._model = model
+        self._converting = False
+        self._processing = False
 
         # Connect signals to slots
         self._connect_signals()
@@ -47,11 +54,13 @@ class ConverterController:
     def _connect_signals(self) -> None:
         """Connect signals from the view to the model."""
         # Connect the convert button signal to the model's convert method
-        self._view.converter_view.btn_convert.clicked.connect(self._convert_files)
+        self._view.converter_view.btn_convert.clicked.connect(self._trigger_conversion)
         self._model.converter.new_status.connect(self._update_status_message)
+        self.convertion_signal.connect(self._convert_files)
 
     def _convert_files(self) -> None:
         """Handle the conversion process when the convert button is clicked."""
+        self._processing = True
         start_time = time.time()
 
         self._prepare_for_convertion()
@@ -85,6 +94,8 @@ class ConverterController:
 
         # Restore the conversion widgets
         self._view.converter_view.togge_widget_status(True)
+        self._converting = False
+        self._processing = False
 
     def _prepare_for_convertion(self) -> None:
         """Prepare the view for conversion by disabling the widgets and updating the status message."""
@@ -106,3 +117,17 @@ class ConverterController:
     def _update_status_message(self) -> None:
         """Update the status message in the view."""
         self._view.status_view.update_status.emit(self._model.converter.status_message)
+
+    def _trigger_conversion(self) -> None:
+        """Trigger the conversion process."""
+        self._converting = True
+
+    @property
+    def converting(self) -> bool:
+        """Check if the conversion process is currently running."""
+        return self._converting
+    
+    @property
+    def processing(self) -> bool:
+        """Check if the conversion process is currently running."""
+        return self._processing

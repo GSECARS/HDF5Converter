@@ -26,11 +26,12 @@
 # ----------------------------------------------------------------------------------
 
 import sys
+import time
 
 from qtpy.QtWidgets import QApplication
 
 from hdf5_converter.view import MainView
-from hdf5_converter.model import MainModel
+from hdf5_converter.model import MainModel, QtWorkerModel
 from hdf5_converter.controller.converter_controller import ConverterController
 
 
@@ -45,6 +46,10 @@ class MainController:
         # Initialize the converter controller
         self._converter_controller = ConverterController(self._view, self._model)
 
+        # Initialize the worker model
+        self._worker_model = QtWorkerModel(self._worker_methods, ())  # Ensure worker runs in a separate thread
+        self._worker_model.start()
+
     def run(self) -> None:
         """Runs the main application."""
         # Display the main view
@@ -52,3 +57,18 @@ class MainController:
 
         # Start the Qt app and return the status code
         sys.exit(self._app.exec())
+
+    def _worker_methods(self) -> None:
+        """This method is responsible for running the worker methods."""
+        
+        # Run the conversion process
+        while not self._view.terminated:
+
+            if self._converter_controller._converting:
+                if not self._converter_controller.processing:
+                    self._converter_controller.convertion_signal.emit()
+
+            time.sleep(0.1)
+        
+        # Set as finished so the GUI can exit
+        self._view.worker_finished = True

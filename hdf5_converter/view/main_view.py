@@ -26,8 +26,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from qtpy.QtWidgets import QMainWindow, QFrame, QVBoxLayout
+from qtpy.QtWidgets import QMainWindow, QFrame, QVBoxLayout, QMessageBox
 from qtpy.QtCore import Qt
+from qtpy.QtGui import QCloseEvent
 
 from hdf5_converter.view.converter_view import ConverterView
 from hdf5_converter.view.status_view import StatusView
@@ -42,6 +43,10 @@ class MainView(QMainWindow):
         # Create the widgets
         self.converter_view = ConverterView()
         self.status_view = StatusView()
+
+        # Helper variables
+        self._terminated = False
+        self._worker_finished = False
 
         # Run the configuration methods
         self._configure_view()
@@ -76,3 +81,24 @@ class MainView(QMainWindow):
 
         # Display the main window
         self.showNormal()
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Creates a message box for exit confirmation if closeEvent is triggered."""
+        _msg_question = QMessageBox.question(
+            self, "Exit confirmation", "Are you sure you want to close the application?"
+        )
+
+        if _msg_question == QMessageBox.Yes:
+
+            self._terminated = True
+
+            while not self._worker_finished:
+                continue
+
+            event.accept()
+        else:
+            event.ignore()
+
+    @property
+    def terminated(self) -> bool:
+        return self._terminated

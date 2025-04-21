@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # ----------------------------------------------------------------------------------
 # Project: HDF5 Converter
-# File: hdf5_converter/model/__init__.py
+# File: hdf5_converter/model/qt_worker_model.py
 # ----------------------------------------------------------------------------------
 # Purpose:
-# This is the main file of the model package, and it is used to initialise the
-# Hdf5 Converter model.
+# This is the qt worker model of the HDF5 Converter GUI. It is responsible for
+# creating a worker thread that handles the conversion processes.
 # ----------------------------------------------------------------------------------
 # Author: Christofanis Skordas
 #
@@ -26,8 +26,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from hdf5_converter.model.main_model import MainModel
-from hdf5_converter.model.qt_worker_model import QtWorkerModel
+from qtpy.QtCore import QThread
+from typing import Callable, Any
 
 
-__all__ = ["MainModel", "QtWorkerModel"]
+class QtWorkerModel(QThread):
+    """This class is responsible for creating a worker thread that handles the conversion processes."""
+
+    def __init__(self, method: Callable, args: Any) -> None:
+        """Initialises the qt worker model."""
+        super(QtWorkerModel, self).__init__()
+        self._method = method
+        self._args = args
+
+    def run(self) -> None:
+        """Runs the worker thread."""
+        self._method(*self._args)
