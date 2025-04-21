@@ -67,6 +67,9 @@ class MainController:
             if self._converter_controller._converting:
                 if not self._converter_controller.processing:
                     self._converter_controller.convertion_signal.emit()
+                    self._converter_controller.convert_files()
+                
+                self._converter_controller.restore_after_convertion()
 
             time.sleep(0.1)
         

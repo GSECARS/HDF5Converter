@@ -56,21 +56,19 @@ class ConverterController(QObject):
         # Connect the convert button signal to the model's convert method
         self._view.converter_view.btn_convert.clicked.connect(self._trigger_conversion)
         self._model.converter.new_status.connect(self._update_status_message)
-        self.convertion_signal.connect(self._convert_files)
+        self.convertion_signal.connect(self._prepare_for_convertion)
 
-    def _convert_files(self) -> None:
-        """Handle the conversion process when the convert button is clicked."""
-        self._processing = True
-        start_time = time.time()
+    def convert_files(self) -> None:
+        """Handle the conversion process."""
 
-        self._prepare_for_convertion()
-
-        # Get the selected format and digits from the view
         format = self._view.converter_view.cmb_output_type.currentText()
         digits = self._view.converter_view.spin_digits.value()
         input_files = self._view.converter_view.btn_input.file_path
 
-        # Convert the files using a thread pool
+        self._processing = True
+        start_time = time.time()
+
+         # Convert the files using a thread pool
         with ThreadPoolExecutor() as executor:
             futures = []
             for file in input_files:
@@ -92,11 +90,6 @@ class ConverterController(QObject):
         else:
             self._view.status_view.update_status.emit(f"Conversion completed in {int(total_time // 60)} minutes and {total_time % 60:.2f} seconds.")
 
-        # Restore the conversion widgets
-        self._view.converter_view.togge_widget_status(True)
-        self._converting = False
-        self._processing = False
-
     def _prepare_for_convertion(self) -> None:
         """Prepare the view for conversion by disabling the widgets and updating the status message."""
         # Disable the conversion widgets
@@ -113,6 +106,17 @@ class ConverterController(QObject):
         for file in input_files:
             self._view.status_view.update_status.emit(file)
         self._view.status_view.update_status.emit("--------------------------------------------------")
+        # Provide the message for the conversion starting
+        self._view.status_view.update_status.emit("Conversion in progress...")
+        
+
+    def restore_after_convertion(self) -> None:
+        """Restore the view after conversion is complete."""
+        # Restore the conversion widgets
+        self._view.converter_view.togge_widget_status(True)
+        # Restore the helpers
+        self._converting = False
+        self._processing = False
 
     def _update_status_message(self) -> None:
         """Update the status message in the view."""
