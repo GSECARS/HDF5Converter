@@ -27,7 +27,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from gsewidgets import Label, SimpleButton, MultiFileBrowserButton, NumericSpinBox, FullComboBox
+from gsewidgets import Label, SimpleButton, MultiFileBrowserButton, NumericSpinBox, FullComboBox, InputBox
 from qtpy.QtCore import QSize
 from qtpy.QtWidgets import QFrame, QGridLayout, QHBoxLayout
 
@@ -43,9 +43,11 @@ class ConverterView(QFrame):
         self.btn_input = MultiFileBrowserButton(text="Load File(s)", file_extensions=["h5", "hdf5", "mh5", "ph5"])
         self.lbl_digits = Label("Number of Digits")
         self.spin_digits = NumericSpinBox(min_value=1, max_value=10, default_value=3, incremental_step=1, size=QSize(32, 32))
-        self.btn_convert = SimpleButton("Convert")
+        self.btn_convert = SimpleButton("Convert", size=QSize(250, 100))
         self.lbl_output_type = Label("Output Type")
         self.cmb_output_type = FullComboBox()
+        self.lbl_search_term = Label("Dataset Search Term")
+        self.input_search_term = InputBox(placeholder="Enter search term", size=QSize(200, 32))
 
         # Configure the widgets
         self._configure_widgets()
@@ -61,6 +63,9 @@ class ConverterView(QFrame):
         self.cmb_output_type.setCurrentIndex(0)
 
         self.btn_input.clicked.connect(self._update_load_file_button)
+
+        # Set the default search term value
+        self.input_search_term.setText("data")
 
     def _update_load_file_button(self) -> None:
         """Updates the load file button with the selected file paths."""
@@ -84,12 +89,21 @@ class ConverterView(QFrame):
         layout_output_type.addWidget(self.lbl_output_type)
         layout_output_type.addWidget(self.cmb_output_type)
 
+        layout_search_term = QHBoxLayout()
+        layout_search_term.setContentsMargins(0, 0, 0, 0)
+        layout_search_term.setSpacing(0)
+        layout_search_term.addWidget(self.lbl_search_term)
+        layout_search_term.addWidget(self.input_search_term)
+
         layout = QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.btn_input, 0, 0, 1, 4)
-        layout.addLayout(layout_digits, 0, 5, 1, 1)
-        layout.addLayout(layout_output_type, 0, 6, 1, 1)
-        layout.addWidget(self.btn_convert, 0, 7, 1, 1)
+        layout.addWidget(self.btn_input, 0, 0, 1, 3)
+        layout.addLayout(layout_search_term, 1, 0, 1, 1)
+        layout.addLayout(layout_digits, 1, 1, 1, 1)
+        layout.addLayout(layout_output_type, 1, 2, 1, 1)
+        layout.setColumnStretch(3, 1)
+        layout.addWidget(self.btn_convert, 0, 3, 2, 2)
+
         
         # Set the layout to the converter view
         self.setLayout(layout)

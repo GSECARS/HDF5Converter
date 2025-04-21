@@ -62,6 +62,7 @@ class ConverterController(QObject):
         """Handle the conversion process."""
 
         format = self._view.converter_view.cmb_output_type.currentText()
+        search_term = self._view.converter_view.input_search_term.text()
         digits = self._view.converter_view.spin_digits.value()
         input_files = self._view.converter_view.btn_input.file_path
 
@@ -72,7 +73,7 @@ class ConverterController(QObject):
         with ThreadPoolExecutor() as executor:
             futures = []
             for file in input_files:
-                future = executor.submit(self._model.converter.process, file, "data", format, digits)
+                future = executor.submit(self._model.converter.process, file, search_term, format, digits)
                 futures.append(future)
 
             for future in futures:
