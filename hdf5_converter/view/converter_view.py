@@ -42,7 +42,7 @@ class ConverterView(QFrame):
         # Create the widgets
         self.btn_input = MultiFileBrowserButton(text="Load File(s)", file_extensions=["h5", "hdf5", "mh5", "ph5"])
         self.lbl_digits = Label("Number of Digits")
-        self.spin_digits = NumericSpinBox(min_value=1, max_value=10, default_value=4, incremental_step=1, size=QSize(32, 32))
+        self.spin_digits = NumericSpinBox(min_value=1, max_value=10, default_value=3, incremental_step=1, size=QSize(32, 32))
         self.btn_convert = SimpleButton("Convert")
         self.lbl_output_type = Label("Output Type")
         self.cmb_output_type = FullComboBox()
