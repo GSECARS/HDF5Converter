@@ -55,10 +55,7 @@ class ConverterModel(QObject):
         digits = int(digits)
 
         # The available formats
-        format_mapping = {
-            "tiff": fabio.tifimage.tifimage,
-            "cbf": fabio.cbfimage.cbfimage
-        }
+        format_mapping = {"tiff": fabio.tifimage.tifimage, "cbf": fabio.cbfimage.cbfimage}
 
         if format not in format_mapping:
             raise ValueError(f"Unsupported format: {format}")
@@ -92,7 +89,7 @@ class ConverterModel(QObject):
 
     def process(self, file_name: str, search_term: str, output_type: str, digits: int) -> None:
         """Processes the HDF5 file and converts the datasets to the specified format."""
-        
+
         image_count = 0
         frame_count = 0
 
@@ -136,7 +133,7 @@ class ConverterModel(QObject):
         if not Path(file_name).is_file():
             self.set_status_message(f"File {file_name} does not exist or cannot be accessed.")
             return
-        
+
         with h5py.File(file_name, "r") as file:
             file.visititems(visit_func)
 

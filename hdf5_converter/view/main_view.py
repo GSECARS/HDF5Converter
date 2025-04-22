@@ -84,9 +84,7 @@ class MainView(QMainWindow):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Creates a message box for exit confirmation if closeEvent is triggered."""
-        _msg_question = QMessageBox.question(
-            self, "Exit confirmation", "Are you sure you want to close the application?"
-        )
+        _msg_question = QMessageBox.question(self, "Exit confirmation", "Are you sure you want to close the application?")
 
         if _msg_question == QMessageBox.Yes:
 

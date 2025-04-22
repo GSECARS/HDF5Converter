@@ -35,11 +35,11 @@ from hdf5_converter.view import MainView
 from hdf5_converter.model import MainModel
 
 
-
 class ConverterController(QObject):
     """This class is responsible for handling the conversion process."""
+
     convertion_signal = Signal()
-    
+
     def __init__(self, view: MainView, model: MainModel) -> None:
         """Initialize the converter controller with the view and model."""
         super(ConverterController, self).__init__()
@@ -69,7 +69,7 @@ class ConverterController(QObject):
         self._processing = True
         start_time = time.time()
 
-         # Convert the files using a thread pool
+        # Convert the files using a thread pool
         with ThreadPoolExecutor() as executor:
             futures = []
             for file in input_files:
@@ -109,7 +109,6 @@ class ConverterController(QObject):
         self._view.status_view.update_status.emit("--------------------------------------------------")
         # Provide the message for the conversion starting
         self._view.status_view.update_status.emit("Conversion in progress...")
-        
 
     def restore_after_convertion(self) -> None:
         """Restore the view after conversion is complete."""
@@ -131,7 +130,7 @@ class ConverterController(QObject):
     def converting(self) -> bool:
         """Check if the conversion process is currently running."""
         return self._converting
-    
+
     @property
     def processing(self) -> bool:
         """Check if the conversion process is currently running."""

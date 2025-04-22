@@ -35,7 +35,7 @@ class StatusView(QFrame):
     """Creates the status view of the HDF5 Converter GUI."""
 
     update_status = Signal(str)
-    
+
     def __init__(self) -> None:
         """Initialises the status view."""
         super(StatusView, self).__init__()
@@ -66,4 +66,3 @@ class StatusView(QFrame):
 
         # Set the layout to the status view
         self.setLayout(layout)
-

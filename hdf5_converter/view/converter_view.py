@@ -105,7 +105,6 @@ class ConverterView(QFrame):
         layout.setColumnStretch(3, 1)
         layout.addWidget(self.btn_convert, 0, 3, 2, 2)
 
-        
         # Set the layout to the converter view
         self.setLayout(layout)
 

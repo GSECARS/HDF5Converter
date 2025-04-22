@@ -60,7 +60,7 @@ class MainController:
 
     def _worker_methods(self) -> None:
         """This method is responsible for running the worker methods."""
-        
+
         # Run the conversion process
         while not self._view.terminated:
 
@@ -68,10 +68,10 @@ class MainController:
                 if not self._converter_controller.processing:
                     self._converter_controller.convertion_signal.emit()
                     self._converter_controller.convert_files()
-                
+
                 self._converter_controller.restore_after_convertion()
 
             time.sleep(0.1)
-        
+
         # Set as finished so the GUI can exit
         self._view.worker_finished = True
