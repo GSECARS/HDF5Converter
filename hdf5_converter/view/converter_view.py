@@ -29,7 +29,7 @@
 
 from gsewidgets import Label, SimpleButton, MultiFileBrowserButton, NumericSpinBox, FullComboBox, InputBox
 from qtpy.QtCore import QSize
-from qtpy.QtWidgets import QFrame, QGridLayout, QHBoxLayout
+from qtpy.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QSizePolicy
 
 
 class ConverterView(QFrame):
@@ -43,7 +43,7 @@ class ConverterView(QFrame):
         self.btn_input = MultiFileBrowserButton(text="Load File(s)", file_extensions=["h5", "hdf5", "mh5", "ph5"])
         self.lbl_digits = Label("Number of Digits")
         self.spin_digits = NumericSpinBox(min_value=1, max_value=10, default_value=3, incremental_step=1, size=QSize(32, 32))
-        self.btn_convert = SimpleButton("Convert", size=QSize(250, 100))
+        self.btn_convert = SimpleButton("Convert")
         self.lbl_output_type = Label("Output Type")
         self.cmb_output_type = FullComboBox()
         self.lbl_search_term = Label("Dataset Search Term")
@@ -63,6 +63,7 @@ class ConverterView(QFrame):
         self.cmb_output_type.setCurrentIndex(0)
 
         self.btn_input.clicked.connect(self._update_load_file_button)
+        self.btn_convert.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # Set the default search term value
         self.input_search_term.setText("data")
@@ -114,3 +115,4 @@ class ConverterView(QFrame):
         self.spin_digits.setEnabled(status)
         self.cmb_output_type.setEnabled(status)
         self.btn_convert.setEnabled(status)
+        self.input_search_term.setEnabled(status)
