@@ -26,9 +26,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from qtpy.QtWidgets import QMainWindow, QFrame, QVBoxLayout, QMessageBox
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QCloseEvent
+from qtpy.QtWidgets import QFrame, QMainWindow, QMessageBox, QVBoxLayout
 
 from hdf5_converter.view.converter_view import ConverterView
 from hdf5_converter.view.status_view import StatusView
@@ -87,7 +87,6 @@ class MainView(QMainWindow):
         _msg_question = QMessageBox.question(self, "Exit confirmation", "Are you sure you want to close the application?")
 
         if _msg_question == QMessageBox.Yes:
-
             self._terminated = True
 
             while not self._worker_finished:
@@ -100,3 +99,7 @@ class MainView(QMainWindow):
     @property
     def terminated(self) -> bool:
         return self._terminated
+
+    @property
+    def worker_finished(self) -> bool:
+        return self._worker_finished
