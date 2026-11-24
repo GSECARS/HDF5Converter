@@ -26,75 +26,69 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QCloseEvent
-from qtpy.QtWidgets import QFrame, QMainWindow, QMessageBox, QVBoxLayout
+import wx
+from wxutils import FlatPanel
 
 from hdf5_converter.view.converter_view import ConverterView
 from hdf5_converter.view.status_view import StatusView
 
 
-class MainView(QMainWindow):
+class MainView(wx.Frame):
     """This class is responsible for displaying the main HDF5 Converter GUI."""
 
     def __init__(self) -> None:
-        super(MainView, self).__init__()
-
-        # Create the widgets
-        self.converter_view = ConverterView()
-        self.status_view = StatusView()
+        super(MainView, self).__init__(parent=None, style=wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP)
 
         # Helper variables
         self._terminated = False
         self._worker_finished = False
 
+        # Create the widgets
+        self.main_panel = FlatPanel(self)
+        self.converter_view = ConverterView(self.main_panel)
+        self.status_view = StatusView(self.main_panel)
+
         # Run the configuration methods
         self._configure_view()
         self._layout()
+        self.Bind(wx.EVT_CLOSE, self._on_close)
 
     def _configure_view(self) -> None:
         """Configures the main view of the HDF5 Converter GUI."""
         # Set the size of the main window
-        self.setMinimumSize(800, 600)
-
-        # Set the window flags
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-
-        # Main frame
-        self.main_frame = QFrame()
-        self.setCentralWidget(self.main_frame)
+        self.SetMinSize(wx.Size(800, 600))
 
     def _layout(self) -> None:
         """Sets the layout of the main view."""
-        # Set the layout of the main frame
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.converter_view)
-        layout.addWidget(self.status_view)
+        # Set the layout of the main panel
+        panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        panel_sizer.Add(self.converter_view, 0, wx.EXPAND)
+        panel_sizer.Add(self.status_view, 1, wx.EXPAND)
+        self.main_panel.SetSizer(panel_sizer)
 
-        self.main_frame.setLayout(layout)
+        frame_sizer = wx.BoxSizer(wx.VERTICAL)
+        frame_sizer.Add(self.main_panel, 1, wx.EXPAND)
+        self.SetSizer(frame_sizer)
 
     def display_window(self) -> None:
         """Sets the title and displays the main window."""
         # Set the window title
-        self.setWindowTitle("HDF5 Converter")
+        self.SetTitle("HDF5 Converter")
 
         # Display the main window
-        self.showNormal()
+        self.Show()
 
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Creates a message box for exit confirmation if closeEvent is triggered."""
-        _msg_question = QMessageBox.question(self, "Exit confirmation", "Are you sure you want to close the application?")
-
-        if _msg_question == QMessageBox.Yes:
+    def _on_close(self, event: wx.CloseEvent) -> None:
+        """Creates a message box for exit confirmation if the window is closed."""
+        dlg = wx.MessageDialog(self, "Are you sure you want to close the application?", "Exit confirmation", wx.YES_NO | wx.ICON_QUESTION)
+        if dlg.ShowModal() == wx.ID_YES:
             self._terminated = True
-
             while not self._worker_finished:
-                continue
-
-            event.accept()
+                wx.SafeYield()
+            event.Skip()
         else:
-            event.ignore()
+            event.Veto()
+        dlg.Destroy()
 
     @property
     def terminated(self) -> bool:
@@ -103,3 +97,7 @@ class MainView(QMainWindow):
     @property
     def worker_finished(self) -> bool:
         return self._worker_finished
+
+    @worker_finished.setter
+    def worker_finished(self, value: bool) -> None:
+        self._worker_finished = value

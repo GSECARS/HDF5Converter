@@ -27,7 +27,7 @@
 # ----------------------------------------------------------------------------------
 
 from hdf5_converter.model.main_model import MainModel
-from hdf5_converter.model.qt_worker_model import QtWorkerModel
+from hdf5_converter.model.qt_worker_model import WorkerModel
 
 
-__all__ = ["MainModel", "QtWorkerModel"]
+__all__ = ["MainModel", "WorkerModel"]

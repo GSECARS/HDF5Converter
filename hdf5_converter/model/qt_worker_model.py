@@ -26,16 +26,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from qtpy.QtCore import QThread
+import threading
 from typing import Callable, Any
 
 
-class QtWorkerModel(QThread):
+class WorkerModel(threading.Thread):
     """This class is responsible for creating a worker thread that handles the conversion processes."""
 
     def __init__(self, method: Callable, args: Any) -> None:
-        """Initialises the qt worker model."""
-        super(QtWorkerModel, self).__init__()
+        """Initialises the worker model."""
+        super(WorkerModel, self).__init__(daemon=True)
         self._method = method
         self._args = args
 

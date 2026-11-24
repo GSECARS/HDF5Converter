@@ -25,13 +25,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-import sys
 import time
 
-from qtpy.QtWidgets import QApplication
+import wx
 
 from hdf5_converter.view import MainView
-from hdf5_converter.model import MainModel, QtWorkerModel
+from hdf5_converter.model import MainModel, WorkerModel
 from hdf5_converter.controller.converter_controller import ConverterController
 
 
@@ -39,7 +38,7 @@ class MainController:
     """This class is responsible for controlling the main application."""
 
     def __init__(self) -> None:
-        self._app = QApplication(sys.argv)
+        self._app = wx.App()
         self._view = MainView()
         self._model = MainModel()
 
@@ -47,7 +46,7 @@ class MainController:
         self._converter_controller = ConverterController(self._view, self._model)
 
         # Initialize the worker model
-        self._worker_model = QtWorkerModel(self._worker_methods, ())  # Ensure worker runs in a separate thread
+        self._worker_model = WorkerModel(self._worker_methods, ())  # Ensure worker runs in a separate thread
         self._worker_model.start()
 
     def run(self) -> None:
@@ -55,8 +54,8 @@ class MainController:
         # Display the main view
         self._view.display_window()
 
-        # Start the Qt app and return the status code
-        sys.exit(self._app.exec())
+        # Start the wx app event loop
+        self._app.MainLoop()
 
     def _worker_methods(self) -> None:
         """This method is responsible for running the worker methods."""
@@ -66,7 +65,7 @@ class MainController:
 
             if self._converter_controller._converting:
                 if not self._converter_controller.processing:
-                    self._converter_controller.convertion_signal.emit()
+                    wx.CallAfter(self._converter_controller._prepare_for_convertion)
                     self._converter_controller.convert_files()
 
                 self._converter_controller.restore_after_convertion()

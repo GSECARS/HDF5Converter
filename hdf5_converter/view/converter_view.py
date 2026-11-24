@@ -27,91 +27,90 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # ----------------------------------------------------------------------------------
 
-from gsewidgets import Label, SimpleButton, MultiFileBrowserButton, NumericSpinBox, FullComboBox, InputBox
-from qtpy.QtCore import QSize
-from qtpy.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QSizePolicy
+import wx
+from wxutils import FlatButton, FlatLabel, FlatCombo, FlatTextCtrl, FlatPanel
+from wxutils.dialogs import FileOpen
+from wxutils.themes import get_theme
 
 
-class ConverterView(QFrame):
+class _LoadFilesButton(FlatButton):
+    """Flat button that opens a multi-file dialog and stores the selected paths."""
+
+    def __init__(self, parent: wx.Window, label: str, file_extensions: list) -> None:
+        super().__init__(parent, label)
+        self._file_extensions = file_extensions
+        self.file_path: list = []
+        self.Bind(wx.EVT_BUTTON, self._open_files)
+
+    def _open_files(self, event: wx.CommandEvent) -> None:
+        """Opens a file dialog and stores the selected paths."""
+        parts = [f"*.{ext}" for ext in self._file_extensions]
+        wildcard = f"HDF5 files ({';'.join(parts)})|{';'.join(parts)}"
+        paths = FileOpen(self.GetTopLevelParent(), "Select HDF5 File(s)", multiple=True, wildcard=wildcard)
+        if paths:
+            self.file_path = paths if isinstance(paths, list) else [paths]
+            self.SetLabel(f"Loaded {len(self.file_path)} File(s)")
+
+
+class ConverterView(FlatPanel):
     """Creates the converter view of the HDF5 Converter GUI."""
 
-    def __init__(self) -> None:
+    def __init__(self, parent: wx.Window) -> None:
         """Initialises the converter view."""
-        super(ConverterView, self).__init__()
+        super(ConverterView, self).__init__(parent)
+
+        theme = get_theme()
+        self.SetBackgroundColour(theme.background)
 
         # Create the widgets
-        self.btn_input = MultiFileBrowserButton(text="Load File(s)", file_extensions=["h5", "hdf5", "mh5", "ph5"])
-        self.lbl_digits = Label("Number of Digits")
-        self.spin_digits = NumericSpinBox(min_value=1, max_value=10, default_value=3, incremental_step=1, size=QSize(32, 32))
-        self.btn_convert = SimpleButton("Convert")
-        self.lbl_output_type = Label("Output Type")
-        self.cmb_output_type = FullComboBox()
-        self.lbl_search_term = Label("Dataset Search Term")
-        self.input_search_term = InputBox(placeholder="Enter search term", size=QSize(200, 32))
+        self.btn_input = _LoadFilesButton(self, "Load File(s)", ["h5", "hdf5", "mh5", "ph5"])
+        self.lbl_digits = FlatLabel(self, label="Number of Digits")
+        self.spin_digits = wx.SpinCtrl(self, value="3", min=1, max=10)
+        self.btn_convert = FlatButton(self, "Convert")
+        self.lbl_output_type = FlatLabel(self, label="Output Type")
+        self.cmb_output_type = FlatCombo(self, choices=["tif", "cbf"])
+        self.lbl_search_term = FlatLabel(self, label="Dataset Search Term")
+        self.input_search_term = FlatTextCtrl(self, value="data", placeholder="Enter search term", size=wx.Size(200, 32))
 
-        # Configure the widgets
-        self._configure_widgets()
+        # Set the default output type
+        self.cmb_output_type.SetSelection(0)
 
         # Set the layout of the converter view
         self._layout()
 
-    def _configure_widgets(self) -> None:
-        """Configures the widgets of the converter view."""
-        # Set the default output type
-        self.cmb_output_type.addItem("tif")
-        self.cmb_output_type.addItem("cbf")
-        self.cmb_output_type.setCurrentIndex(0)
-
-        self.btn_input.clicked.connect(self._update_load_file_button)
-        self.btn_convert.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
-        # Set the default search term value
-        self.input_search_term.setText("data")
-
-    def _update_load_file_button(self) -> None:
-        """Updates the load file button with the selected file paths."""
-        if self.btn_input.file_path:
-            self.btn_input.setText(f"Loaded {len(self.btn_input.file_path)} File(s)")
-        else:
-            self.btn_input.setText("Load File(s)")
-
     def _layout(self) -> None:
         """Sets the layout of the converter view."""
+        digits_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        digits_sizer.Add(self.lbl_digits, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        digits_sizer.Add(self.spin_digits, 0, wx.ALIGN_CENTER_VERTICAL)
 
-        layout_digits = QHBoxLayout()
-        layout_digits.setContentsMargins(0, 0, 0, 0)
-        layout_digits.setSpacing(0)
-        layout_digits.addWidget(self.lbl_digits)
-        layout_digits.addWidget(self.spin_digits)
+        output_type_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        output_type_sizer.Add(self.lbl_output_type, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        output_type_sizer.Add(self.cmb_output_type, 0, wx.ALIGN_CENTER_VERTICAL)
 
-        layout_output_type = QHBoxLayout()
-        layout_output_type.setContentsMargins(0, 0, 0, 0)
-        layout_output_type.setSpacing(0)
-        layout_output_type.addWidget(self.lbl_output_type)
-        layout_output_type.addWidget(self.cmb_output_type)
+        search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        search_sizer.Add(self.lbl_search_term, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        search_sizer.Add(self.input_search_term, 1, wx.EXPAND)
 
-        layout_search_term = QHBoxLayout()
-        layout_search_term.setContentsMargins(0, 0, 0, 0)
-        layout_search_term.setSpacing(0)
-        layout_search_term.addWidget(self.lbl_search_term)
-        layout_search_term.addWidget(self.input_search_term)
+        row_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        row_sizer.Add(search_sizer, 1, wx.EXPAND)
+        row_sizer.Add(digits_sizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
+        row_sizer.Add(output_type_sizer, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
 
-        layout = QGridLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(self.btn_input, 0, 0, 1, 3)
-        layout.addLayout(layout_search_term, 1, 0, 1, 1)
-        layout.addLayout(layout_digits, 1, 1, 1, 1)
-        layout.addLayout(layout_output_type, 1, 2, 1, 1)
-        layout.setColumnStretch(3, 1)
-        layout.addWidget(self.btn_convert, 0, 3, 2, 2)
+        left_sizer = wx.BoxSizer(wx.VERTICAL)
+        left_sizer.Add(self.btn_input, 0, wx.EXPAND)
+        left_sizer.Add(row_sizer, 0, wx.EXPAND | wx.TOP, 2)
 
-        # Set the layout to the converter view
-        self.setLayout(layout)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(left_sizer, 1, wx.EXPAND)
+        sizer.Add(self.btn_convert, 0, wx.EXPAND | wx.LEFT, 2)
+
+        self.SetSizer(sizer)
 
     def togge_widget_status(self, status: bool) -> None:
         """Toggles the status of the widgets in the converter view."""
-        self.btn_input.setEnabled(status)
-        self.spin_digits.setEnabled(status)
-        self.cmb_output_type.setEnabled(status)
-        self.btn_convert.setEnabled(status)
-        self.input_search_term.setEnabled(status)
+        self.btn_input.Enable(status)
+        self.spin_digits.Enable(status)
+        self.cmb_output_type.Enable(status)
+        self.btn_convert.Enable(status)
+        self.input_search_term.Enable(status)

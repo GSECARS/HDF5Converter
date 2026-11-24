@@ -27,27 +27,25 @@
 # ----------------------------------------------------------------------------------
 
 from pathlib import Path
+from typing import Callable, Optional
 
 import fabio
 import h5py
-from qtpy.QtCore import Signal, QObject
 
 
-class ConverterModel(QObject):
+class ConverterModel:
     """This class is responsible for handling the conversion process."""
-
-    new_status = Signal()
 
     def __init__(self) -> None:
         """Initialises the converter model."""
-        super(ConverterModel, self).__init__()
-
         self._status_message = ""
+        self.status_callback: Optional[Callable[[], None]] = None
 
     def set_status_message(self, message: str) -> None:
         """Sets the status message."""
         self._status_message = message
-        self.new_status.emit()
+        if self.status_callback is not None:
+            self.status_callback()
 
     def save_data(self, data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tif") -> None:
         """Saves the data in the specified format."""
