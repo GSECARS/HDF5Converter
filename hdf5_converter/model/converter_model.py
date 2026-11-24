@@ -49,13 +49,13 @@ class ConverterModel(QObject):
         self._status_message = message
         self.new_status.emit()
 
-    def save_data(self, data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tiff") -> None:
+    def save_data(self, data: list, output_file: str, is_single_frame: bool = False, digits: int = 4, format: str = "tif") -> None:
         """Saves the data in the specified format."""
 
         digits = int(digits)
 
         # The available formats
-        format_mapping = {"tiff": fabio.tifimage.tifimage, "cbf": fabio.cbfimage.cbfimage}
+        format_mapping = {"tif": fabio.tifimage.tifimage, "cbf": fabio.cbfimage.cbfimage}
 
         if format not in format_mapping:
             raise ValueError(f"Unsupported format: {format}")

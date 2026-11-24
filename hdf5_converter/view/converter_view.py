@@ -58,7 +58,7 @@ class ConverterView(QFrame):
     def _configure_widgets(self) -> None:
         """Configures the widgets of the converter view."""
         # Set the default output type
-        self.cmb_output_type.addItem("tiff")
+        self.cmb_output_type.addItem("tif")
         self.cmb_output_type.addItem("cbf")
         self.cmb_output_type.setCurrentIndex(0)
 

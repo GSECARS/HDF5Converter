@@ -2,7 +2,7 @@
 
 ![Licence](https://img.shields.io/badge/License-GPL--3.0-teal.svg) ![Python](https://img.shields.io/badge/Python-3.13-22558a.svg?logo=python&color=22558a)
 
-This application is designed to convert HDF5 files into various formats. It currently supports conversion to .tiff and .cbf, with additional formats planned for future updates.
+This application is designed to convert HDF5 files into various formats. It currently supports conversion to .tif and .cbf, with additional formats planned for future updates.
 
 ------------
 ## Table of Contents
