@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `uv.lock` lockfile for fully reproducible dependency resolution
 - `.python-version` file pinning the project to Python 3.14
 - Dynamic versioning from VCS tags via `hatch-vcs`
+- Sphinx documentation under `docs/` with `conf.py`, `index.md`, `converter.md`, and a footer template
+- `index.md` landing page with installation instructions, CLI flags, and module grid cards
+- `converter.md` covering supported formats, UI walkthrough, output layout, library usage examples, parameter tables
 
 ### Changed
 
