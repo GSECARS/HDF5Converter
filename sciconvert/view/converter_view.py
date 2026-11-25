@@ -1,31 +1,4 @@
-#!/usr/bin/python3
-# ----------------------------------------------------------------------------------
-# Project: HDF5 Converter
-# File: hdf5_converter/view/converter_view.py
-# ----------------------------------------------------------------------------------
-# Purpose:
-# This is the converter view of the HDF5 Converter GUI. It is responsible for
-# displaying the converter view, which includes the file selection, conversion
-# options, and the conversion button.
-# ----------------------------------------------------------------------------------
-# Author: Christofanis Skordas
-#
-# Copyright (c) 2025 GSECARS, The University of Chicago
-# Copyright (c) 2025 NSF SEES, Synchrotron Earth and Environmental Science
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# ----------------------------------------------------------------------------------
+# SPDX-License-Identifier: MIT
 
 import wx
 from wxutils import FlatButton, FlatLabel, FlatCombo, FlatTextCtrl, FlatPanel
@@ -114,3 +87,4 @@ class ConverterView(FlatPanel):
         self.cmb_output_type.Enable(status)
         self.btn_convert.Enable(status)
         self.input_search_term.Enable(status)
+

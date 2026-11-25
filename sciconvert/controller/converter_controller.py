@@ -1,47 +1,21 @@
-#!/usr/bin/python3
-# ----------------------------------------------------------------------------------
-# Project: HDF5 Converter
-# File: hdf5_converter/controller/converter_controller.py
-# ----------------------------------------------------------------------------------
-# Purpose:
-# This file is the converter controller of the HDF5 Converter GUI. It is responsible
-# for handling the conversion process and connecting the view and model.
-# ----------------------------------------------------------------------------------
-# Author: Christofanis Skordas
-#
-# Copyright (c) 2025 GSECARS, The University of Chicago
-# Copyright (c) 2025 NSF SEES, Synchrotron Earth and Environmental Science
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# ----------------------------------------------------------------------------------
+# SPDX-License-Identifier: MIT
 
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 import wx
 
-from hdf5_converter.view import MainView
-from hdf5_converter.model import MainModel
+from sciconvert.view import MainView
+from sciconvert.model import MainModel
 
 
 class ConverterController:
     """This class is responsible for handling the conversion process."""
 
-    def __init__(self, view: MainView, model: MainModel) -> None:
+    def __init__(self, model: MainModel, view: MainView) -> None:
         """Initialize the converter controller with the view and model."""
-        self._view = view
         self._model = model
+        self._view = view
         self._converting = False
         self._processing = False
 
@@ -127,3 +101,4 @@ class ConverterController:
     @property
     def processing(self) -> bool:
         return self._processing
+

@@ -1,95 +1,95 @@
-# ----------------------------------------------------------------------------------
-# Project: HDF5Converter
-# File: pyproject.toml
-# ----------------------------------------------------------------------------------
-# Purpose:
-# This file is uded to specify the project configuration, metadata, and dependencies
-# for the HDF5Converter application.
-# ----------------------------------------------------------------------------------
-# Author: Christofanis Skordas
-#
-# Copyright (c) 2025 GSECARS, The University of Chicago
-# Copyright (c) 2025 NSF SEES, Synchrotron Earth and Environmental Science
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# ----------------------------------------------------------------------------------
-
-[build-system]
-requires = [
-    "setuptools >= 75.8.0",
-    "setuptools_scm >= 8.2.0",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+# SPDX-License-Identifier: MIT
 
 [project]
-name = "HDF5Converter"
-version = "0.0.1"
-authors = [
-    {name = "Christofanis Skordas", email = "55315750+skordaschristofanis@users.noreply.github.com"}
-]
-maintainers = [
-    {name = "Christofanis Skordas", email = "55315750+skordaschristofanis@users.noreply.github.com"}
-]
-description = "HDF5Converter is a Python application for converting HDF5 files to other formats."
+name = "sciconvert"
+dynamic = ["version"]
+authors = [ {name = "Christofanis Skordas", email = "skordasc@uchicago.edu"} ]
+maintainers = [ {name = "Christofanis Skordas", email = "skordasc@uchicago.edu"} ]
+description = "SciConvert is a scientific data file format converter."
 readme = {file = "README.md", content-type = "text/markdown"}
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE.txt"]
 classifiers = [
     "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
     "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
     "Intended Audience :: System Administrators",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.13",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Utilities",
 ]
-requires-python = ">=3.13"
+requires-python = "==3.14.*"
 dependencies = [
-    "h5py>=3.13.0",
-    "numpy>=2.2.4",
-    "scipy>=1.15.2",
-    "fabio>=2024.9.0",
+    "h5py>=3.16.0",
+    "numpy>=2.5.5",
+    "scipy>=1.18.1",
+    "fabio>=2026.6.0",
     "wxutils>=2026.4.0",
 ]
 
-[project.optional-dependencies]
-development = [
-    "black>=25.1.0",
-    "flake8>=7.2.0",
-    "pre-commit>=4.2.0",
-    "setuptools>=75.8.0",
-    "setuptools-scm>=8.2.0",
-    "pyinstaller==6.10.0"
+[dependency-groups]
+dev = [
+    "pre-commit>=4.7.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+docs = [
+    "myst-parser>=5.2.0",
+    "pydata-sphinx-theme>=0.24.0",
+    "sphinx>=9.2.0",
+    "sphinx-autoapi>=3.9.0",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-design>=0.8.0",
 ]
 
+[project.scripts]
+sciconvert = "sciconvert:main"
+
 [project.urls]
-Homepage = "https://github.com/GSECARS/HDF5Converter"
-Issues = "https://github.com/GSECARS/HDF5Converter/issues"
+Homepage = "https://github.com/gsecars/sciconvert"
+Issues = "https://github.com/gsecars/sciconvert/issues"
 
-[tool.black]
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.target.wheel]
+packages = ["sciconvert"]
+include = ["/sciconvert/assets/**"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.ruff]
+exclude = [
+    ".eggs",
+    ".git",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".venv",
+    "build",
+    "dist",
+]
 line-length = 160
-target-version = ['py313']
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | build
-  | dist
-)/
-'''
+indent-width = 4
+target-version = "py314"
 
-[tool.flake8]
-exclude = ".git,__pycache__,build,dist"
-max-line-length = 160
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"
+
